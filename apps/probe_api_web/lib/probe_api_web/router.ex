@@ -1,5 +1,6 @@
 defmodule ProbeApiWeb.Router do
   use ProbeApiWeb, :router
+  alias ProbeApiWeb.PositionController
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -12,6 +13,13 @@ defmodule ProbeApiWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+
+    scope "/api/v1" do
+      get "/position_history", PositionController, :index
+      get "/current_position", PositionController, :show_current_position
+      post "/reset_probe", PositionController, :reset_probe
+      post "/positions", PositionController, :create
+    end
   end
 
   scope "/", ProbeApiWeb do
