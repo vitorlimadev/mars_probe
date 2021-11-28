@@ -1,4 +1,5 @@
 defmodule ProbeApi.Movement do
+  @spec move(map()) :: map()
   def move(%{face: "D"} = current_position),
     do: Map.put(current_position, :y, current_position.y + 1)
 

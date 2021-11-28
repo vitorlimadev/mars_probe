@@ -1,4 +1,5 @@
 defmodule ProbeApi.Rotation do
+  @spec rotate(map(), binary()) :: map()
   def rotate(%{face: "D"} = current_position, "GE"),
     do: Map.put(current_position, :face, "C")
 

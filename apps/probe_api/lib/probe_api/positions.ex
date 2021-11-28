@@ -9,22 +9,27 @@ defmodule ProbeApi.Positions do
   alias ProbeApi.Positions.Position
 
   @doc """
-  Returns all of the Probe's positions during it's way.
+  Returns all of the Probe's final positions during it's way.
 
   ## Examples
+  If the probe starter at x=0, y=0 facing right, and recieved a valid
+  series of commands which led it to x=4, y=0 facing down.
 
       iex> list_positions()
-      [%Position{}, ...]
+      [
+        %Position{ x: 0, y: 0, face: "D"},
+        %Position{ x: 4, y: 0, face: "U"}
+      ]
 
   """
+  @spec list_positions() :: [%Position{}] | []
   def list_positions do
     Repo.all(Position)
   end
 
   @doc """
   Gets the Probe's current position.
-
-  Raises `Ecto.NoResultsError` if there's no Position on the database.
+  Returns nil if no position is found on the database.
 
   ## Examples
 
@@ -32,9 +37,10 @@ defmodule ProbeApi.Positions do
       %Position{}
 
       iex> get_current_position!()
-      ** (Ecto.NoResultsError)
+      nil
 
   """
+  @spec get_current_position!() :: %Position{} | nil
   def get_current_position! do
     last(Position) |> Repo.one()
   end
@@ -48,6 +54,7 @@ defmodule ProbeApi.Positions do
       {:ok, %Position{x: 0, y: 0, face: "D"}}
 
   """
+  @spec reset_probe() :: {:ok, %Position{}}
   def reset_probe do
     Position.changeset(%{x: 0, y: 0, face: "D"})
     |> Repo.insert()
@@ -65,6 +72,7 @@ defmodule ProbeApi.Positions do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_position(map()) :: {:ok, %Position{}} | {:error, %Ecto.Changeset{}}
   def create_position(new_position) do
     Position.changeset(new_position)
     |> Repo.insert()

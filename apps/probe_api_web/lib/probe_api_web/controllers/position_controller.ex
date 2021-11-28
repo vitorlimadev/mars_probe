@@ -13,7 +13,7 @@ defmodule ProbeApiWeb.PositionController do
   end
 
   def reset_probe(conn, _params) do
-    {:ok, position} = Positions.reset_probe
+    {:ok, position} = Positions.reset_probe()
     render(conn, "show.json", position: position)
   end
 
