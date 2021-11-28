@@ -27,7 +27,7 @@ defmodule ProbeApi.Commands do
 
   """
   @spec run_commands(list(binary())) ::
-          {:ok, Position.t()} | {:error, :invalid_commands | :impossible_movement}
+          {:ok, Position.t()} | {:error, :invalid_commands | :impossible_movement | :no_probe}
   def run_commands(commands) do
     commands
     |> validate_commands()
@@ -44,15 +44,19 @@ defmodule ProbeApi.Commands do
   end
 
   defp execute_commands({commands, valid?: true}) do
-    current_position = Positions.get_current_position!() |> Map.from_struct()
+    with {:ok, current_position} <- Positions.get_current_position(),
+         current_position <- Map.from_struct(current_position) do
+      commands
+      |> Enum.reduce_while(current_position, fn command, position ->
+        case execute_command(position, command) do
+          {:error, err} -> {:halt, {:error, err}}
+          position -> {:cont, position}
+        end
+      end)
 
-    commands
-    |> Enum.reduce_while(current_position, fn command, position ->
-      case execute_command(position, command) do
-        {:error, err} -> {:halt, {:error, err}}
-        position -> {:cont, position}
-      end
-    end)
+    else
+      err -> err
+    end
   end
 
   defp execute_commands({_commands, valid?: false}),

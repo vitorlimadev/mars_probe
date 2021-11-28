@@ -26,7 +26,9 @@ defmodule ProbeApiWeb.PositionController do
   end
 
   def show_current_position(conn, _params) do
-    position = Positions.get_current_position!()
-    render(conn, "show.json", position: position)
+    case Positions.get_current_position() do
+      {:ok, position} -> render(conn, "show.json", position: position)
+      err -> err
+    end
   end
 end

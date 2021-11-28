@@ -25,4 +25,8 @@ defmodule ProbeApiWeb.PositionView do
   def render("impossible_movement.json", _) do
     %{erro: "Movimento impossível"}
   end
+
+  def render("no_probe.json", _) do
+    %{erro: "A sonda não foi pousada em marte. Pouse-a com uma requisição POST em /api/v1/reset_probe"}
+  end
 end

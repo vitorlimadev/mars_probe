@@ -29,20 +29,23 @@ defmodule ProbeApi.Positions do
 
   @doc """
   Gets the Probe's current position.
-  Returns nil if no position is found on the database.
+  Returns {:error, :no_probe} if no position is found on the database.
 
   ## Examples
 
-      iex> get_current_position!()
+      iex> get_current_position()
       %Position{}
 
-      iex> get_current_position!()
-      nil
+      iex> get_current_position()
+      {:error, :no_probe}
 
   """
-  @spec get_current_position!() :: Position.t() | nil
-  def get_current_position! do
-    last(Position) |> Repo.one()
+  @spec get_current_position() :: Position.t() | nil
+  def get_current_position do
+    case last(Position) |> Repo.one() do
+      nil -> {:error, :no_probe}
+      position -> position
+    end
   end
 
   @doc """

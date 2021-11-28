@@ -35,4 +35,11 @@ defmodule ProbeApiWeb.FallbackController do
     |> put_view(ProbeApiWeb.PositionView)
     |> render("invalid_commands.json")
   end
+
+  def call(conn, {:error, :no_probe}) do
+    conn
+    |> put_status(:conflict)
+    |> put_view(ProbeApiWeb.PositionView)
+    |> render("no_probe.json")
+  end
 end
