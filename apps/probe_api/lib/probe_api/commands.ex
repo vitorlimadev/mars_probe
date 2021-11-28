@@ -53,7 +53,6 @@ defmodule ProbeApi.Commands do
           position -> {:cont, position}
         end
       end)
-
     else
       err -> err
     end

@@ -44,7 +44,7 @@ defmodule ProbeApi.Positions do
   def get_current_position do
     case last(Position) |> Repo.one() do
       nil -> {:error, :no_probe}
-      position -> position
+      position -> {:ok, position}
     end
   end
 
@@ -68,16 +68,17 @@ defmodule ProbeApi.Positions do
 
   ## Examples
 
-      iex> create_position(%{x: 0, y: 2, face: "C"})
+      iex> create_position(%Position{x: 0, y: 2, face: "C"})
       {:ok, %Position{}}
 
-      iex> create_position(%{field: :bad_value})
+      iex> create_position(%Position{field: :bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
   @spec create_position(map()) :: {:ok, Position.t()} | {:error, Ecto.Changeset.t()}
   def create_position(new_position) do
-    Position.changeset(new_position)
+    new_position
+    |> Position.changeset()
     |> Repo.insert()
   end
 end
