@@ -1,5 +1,6 @@
 defmodule ProbeApi.Commands do
   @moduledoc """
+  See ProbeApi.Commands.run_commands/1
   """
 
   alias ProbeApi.Movement
@@ -26,7 +27,7 @@ defmodule ProbeApi.Commands do
 
   """
   @spec run_commands(list(binary())) ::
-          {:ok, %Position{}} | {:error, :invalid_commands | :impossible_movement}
+          {:ok, Position.t()} | {:error, :invalid_commands | :impossible_movement}
   def run_commands(commands) do
     commands
     |> validate_commands()
@@ -39,7 +40,7 @@ defmodule ProbeApi.Commands do
       commands
       |> Enum.filter(&(&1 not in @valid_commands))
 
-    {commands, valid?: length(invalid_commands) == 0}
+    {commands, valid?: invalid_commands == []}
   end
 
   defp execute_commands({commands, valid?: true}) do

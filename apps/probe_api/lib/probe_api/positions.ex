@@ -22,7 +22,7 @@ defmodule ProbeApi.Positions do
       ]
 
   """
-  @spec list_positions() :: [%Position{}] | []
+  @spec list_positions() :: [Position.t()] | []
   def list_positions do
     Repo.all(Position)
   end
@@ -40,7 +40,7 @@ defmodule ProbeApi.Positions do
       nil
 
   """
-  @spec get_current_position!() :: %Position{} | nil
+  @spec get_current_position!() :: Position.t() | nil
   def get_current_position! do
     last(Position) |> Repo.one()
   end
@@ -54,7 +54,7 @@ defmodule ProbeApi.Positions do
       {:ok, %Position{x: 0, y: 0, face: "D"}}
 
   """
-  @spec reset_probe() :: {:ok, %Position{}}
+  @spec reset_probe() :: {:ok, Position.t()}
   def reset_probe do
     Position.changeset(%{x: 0, y: 0, face: "D"})
     |> Repo.insert()
@@ -72,7 +72,7 @@ defmodule ProbeApi.Positions do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec create_position(map()) :: {:ok, %Position{}} | {:error, %Ecto.Changeset{}}
+  @spec create_position(map()) :: {:ok, Position.t()} | {:error, Ecto.Changeset.t()}
   def create_position(new_position) do
     Position.changeset(new_position)
     |> Repo.insert()
