@@ -32,7 +32,7 @@ defmodule ProbeApi.Commands do
     commands
     |> validate_commands()
     |> execute_commands()
-    |> update_position()
+    |> update_current_position()
   end
 
   defp validate_commands(commands) do
@@ -45,12 +45,12 @@ defmodule ProbeApi.Commands do
 
   defp execute_commands({commands, valid?: true}) do
     with {:ok, current_position} <- Positions.get_current_position(),
-         current_position <- Map.from_struct(current_position) do
+         current_position <- Position.to_map(current_position) do
       commands
       |> Enum.reduce_while(current_position, fn command, position ->
         case execute_command(position, command) do
           {:error, err} -> {:halt, {:error, err}}
-          position -> {:cont, position}
+          position -> {:cont, Position.to_map(position)}
         end
       end)
     else
@@ -77,16 +77,15 @@ defmodule ProbeApi.Commands do
       %{valid?: true} = changeset ->
         changeset
         |> Ecto.Changeset.apply_action!(:update)
-        |> Map.from_struct()
 
       _ ->
         {:error, :impossible_movement}
     end
   end
 
-  defp update_position({:error, err}), do: {:error, err}
+  defp update_current_position({:error, err}), do: {:error, err}
 
-  defp update_position(new_position) do
+  defp update_current_position(new_position) do
     Positions.create_position(new_position)
   end
 end

@@ -24,4 +24,15 @@ defmodule ProbeApi.Positions.Position do
     |> validate_number(:y, greater_than_or_equal_to: 0, less_than_or_equal_to: 4)
     |> validate_inclusion(:face, @valid_faces)
   end
+
+  @doc """
+  Returns a map of the positions's data without the Ecto metadata.
+  """
+  def to_map(%__MODULE__{} = position) do
+    %{
+      x: position.x,
+      y: position.y,
+      face: position.face
+    }
+  end
 end
