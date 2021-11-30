@@ -2,62 +2,115 @@ defmodule ProbeApi.PositionsTest do
   use ProbeApi.DataCase
 
   alias ProbeApi.Positions
+  alias ProbeApi.Positions.Position
 
-  describe "positions" do
-    alias ProbeApi.Positions.Position
+  setup do
+    {:ok, position} = Positions.create_position(%{x: 0, y: 0, face: "D"})
 
-    import ProbeApi.PositionsFixtures
+    {:ok, pos: position}
+  end
 
-    @invalid_attrs %{face: nil, x: nil, y: nil}
+  describe "create_position/1" do
+    test "creates positions facing all directions" do
+      # Right
+      assert {:ok,
+              %Position{
+                face: "D",
+                x: 0,
+                y: 0
+              }} = Positions.create_position(%{x: 0, y: 0, face: "D"})
 
-    test "list_positions/0 returns all positions" do
-      position = position_fixture()
-      assert Positions.list_positions() == [position]
+      # Left
+      assert {:ok,
+              %Position{
+                face: "E",
+                x: 0,
+                y: 0
+              }} = Positions.create_position(%{x: 0, y: 0, face: "E"})
+
+      # Up
+      assert {:ok,
+              %Position{
+                face: "C",
+                x: 0,
+                y: 0
+              }} = Positions.create_position(%{x: 0, y: 0, face: "C"})
+
+      # Down
+      assert {:ok,
+              %Position{
+                face: "D",
+                x: 0,
+                y: 0
+              }} = Positions.create_position(%{x: 0, y: 0, face: "D"})
     end
 
-    test "get_position!/1 returns the position with given id" do
-      position = position_fixture()
-      assert Positions.get_position!(position.id) == position
+    test "fails if matrix location is unreachable" do
+      assert {:error,
+              %Ecto.Changeset{
+                errors: [
+                  x:
+                    {"must be less than or equal to %{number}",
+                     [validation: :number, kind: :less_than_or_equal_to, number: 4]}
+                ]
+              }} = Positions.create_position(%{x: 5, y: 0, face: "D"})
+
+      assert {:error,
+              %Ecto.Changeset{
+                errors: [
+                  y:
+                    {"must be less than or equal to %{number}",
+                     [validation: :number, kind: :less_than_or_equal_to, number: 4]}
+                ]
+              }} = Positions.create_position(%{x: 0, y: 5, face: "D"})
+
+      assert {:error,
+              %Ecto.Changeset{
+                errors: [
+                  x:
+                    {"must be greater than or equal to %{number}",
+                     [validation: :number, kind: :greater_than_or_equal_to, number: 0]}
+                ]
+              }} = Positions.create_position(%{x: -1, y: 0, face: "D"})
+
+      assert {:error,
+              %Ecto.Changeset{
+                errors: [
+                  y:
+                    {"must be greater than or equal to %{number}",
+                     [validation: :number, kind: :greater_than_or_equal_to, number: 0]}
+                ]
+              }} = Positions.create_position(%{x: 0, y: -1, face: "D"})
     end
 
-    test "create_position/1 with valid data creates a position" do
-      valid_attrs = %{face: "some face", x: 42, y: 42}
-
-      assert {:ok, %Position{} = position} = Positions.create_position(valid_attrs)
-      assert position.face == "some face"
-      assert position.x == 42
-      assert position.y == 42
+    test "fails if face is invalid" do
+      assert {:error, %Ecto.Changeset{}} = Positions.create_position(%{x: 5, y: 0, face: "U"})
     end
 
-    test "create_position/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Positions.create_position(@invalid_attrs)
+    test "with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Positions.create_position(%{invalid: "data"})
+    end
+  end
+
+  describe "list_positions/0" do
+    test "list_positions/0 returns all positions asc", %{pos: pos} do
+      {:ok, pos2} = Positions.create_position(%{x: 1, y: 0, face: "D"})
+      {:ok, pos3} = Positions.create_position(%{x: 2, y: 0, face: "D"})
+      {:ok, pos4} = Positions.create_position(%{x: 3, y: 0, face: "D"})
+
+      assert Positions.list_positions() == [pos, pos2, pos3, pos4]
     end
 
-    test "update_position/2 with valid data updates the position" do
-      position = position_fixture()
-      update_attrs = %{face: "some updated face", x: 43, y: 43}
+  end
 
-      assert {:ok, %Position{} = position} = Positions.update_position(position, update_attrs)
-      assert position.face == "some updated face"
-      assert position.x == 43
-      assert position.y == 43
-    end
-
-    test "update_position/2 with invalid data returns error changeset" do
-      position = position_fixture()
-      assert {:error, %Ecto.Changeset{}} = Positions.update_position(position, @invalid_attrs)
-      assert position == Positions.get_position!(position.id)
-    end
-
-    test "delete_position/1 deletes the position" do
-      position = position_fixture()
-      assert {:ok, %Position{}} = Positions.delete_position(position)
-      assert_raise Ecto.NoResultsError, fn -> Positions.get_position!(position.id) end
-    end
-
-    test "change_position/1 returns a position changeset" do
-      position = position_fixture()
-      assert %Ecto.Changeset{} = Positions.change_position(position)
+  describe "reset_probe/0" do
+    test "reset_probe/0 lands the probe" do
+      assert {:ok,
+              %Position{
+                face: "D",
+                x: 0,
+                y: 0
+              }} = Positions.reset_probe()
     end
   end
 end

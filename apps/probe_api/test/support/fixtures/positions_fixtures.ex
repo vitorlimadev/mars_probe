@@ -11,9 +11,9 @@ defmodule ProbeApi.PositionsFixtures do
     {:ok, position} =
       attrs
       |> Enum.into(%{
-        face: "some face",
-        x: 42,
-        y: 42
+        face: "D",
+        x: 0,
+        y: 0
       })
       |> ProbeApi.Positions.create_position()
 

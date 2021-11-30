@@ -14,7 +14,10 @@ defmodule ProbeApiWeb.PositionController do
 
   def reset_probe(conn, _params) do
     {:ok, position} = Positions.reset_probe()
-    render(conn, "show.json", position: position)
+
+    conn
+    |> put_status(:created)
+    |> render("show.json", position: position)
   end
 
   def create(conn, %{"movimentos" => commands}) do
@@ -25,10 +28,16 @@ defmodule ProbeApiWeb.PositionController do
     end
   end
 
+  def create(conn, _params) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(ProbeApiWeb.PositionView)
+    |> render("invalid_commands.json")
+  end
+
   def show_current_position(conn, _params) do
-    case Positions.get_current_position() do
-      {:ok, position} -> render(conn, "show.json", position: position)
-      err -> err
+    with {:ok, position} <- Positions.get_current_position() do
+      render(conn, "show.json", position: position)
     end
   end
 end

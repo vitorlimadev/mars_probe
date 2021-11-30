@@ -28,12 +28,14 @@ defmodule ProbeApi.Commands do
   """
   @spec run_commands(list(binary())) ::
           {:ok, Position.t()} | {:error, :invalid_commands | :impossible_movement | :no_probe}
-  def run_commands(commands) do
+  def run_commands(commands) when is_list(commands) and length(commands) > 0 do
     commands
     |> validate_commands()
     |> execute_commands()
     |> update_current_position()
   end
+
+  def run_commands(_commands), do: {:error, :invalid_commands}
 
   defp validate_commands(commands) do
     invalid_commands =
@@ -53,8 +55,6 @@ defmodule ProbeApi.Commands do
           position -> {:cont, Position.to_map(position)}
         end
       end)
-    else
-      err -> err
     end
   end
 
