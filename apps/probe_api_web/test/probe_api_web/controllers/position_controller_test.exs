@@ -11,13 +11,15 @@ defmodule ProbeApiWeb.PositionControllerTest do
     test "lists all positions", %{conn: conn} do
       conn = get(conn, Routes.position_path(conn, :index))
 
-      assert json_response(conn, 200)["data"] == [
+      assert [
                %{
+                 "id" => _,
                  "face" => "D",
                  "x" => 0,
-                 "y" => 0
+                 "y" => 0,
+                 "inserted_at" => _
                }
-             ]
+             ] = json_response(conn, 200)["cursor"]["data"]
     end
   end
 
