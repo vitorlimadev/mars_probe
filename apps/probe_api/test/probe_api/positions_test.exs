@@ -98,9 +98,13 @@ defmodule ProbeApi.PositionsTest do
       {:ok, pos3} = Positions.create_position(%{x: 2, y: 0, face: "D"})
       {:ok, pos4} = Positions.create_position(%{x: 3, y: 0, face: "D"})
 
-      assert Positions.list_positions(%{"after" => nil, "before" => nil}).entries == [pos, pos2, pos3, pos4]
+      assert Positions.list_positions(%{"after" => nil, "before" => nil}).entries == [
+               pos,
+               pos2,
+               pos3,
+               pos4
+             ]
     end
-
   end
 
   describe "reset_probe/0" do
