@@ -15,7 +15,7 @@ defmodule ProbeApiWeb.Router do
     plug :accepts, ["json"]
 
     scope "/api/v1" do
-      get "/position_history", PositionController, :index
+      get "/positions", PositionController, :index
       get "/current_position", PositionController, :show_current_position
       post "/reset_probe", PositionController, :reset_probe
       post "/positions", PositionController, :create
