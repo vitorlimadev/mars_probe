@@ -4,8 +4,9 @@ defmodule ProbeApi.Positions do
   """
 
   import Ecto.Query, warn: false
-  alias ProbeApi.Repo
 
+  alias ProbeApi.Repo
+  alias ProbeApi.Positions.Inputs.ListPositionsInput
   alias ProbeApi.Positions.Position
 
   @doc """
@@ -16,15 +17,18 @@ defmodule ProbeApi.Positions do
   series of commands which led it to x=4, y=0 facing down.
 
       iex> list_positions()
-      [
-        %Position{ x: 0, y: 0, face: "D"},
-        %Position{ x: 4, y: 0, face: "U"}
-      ]
+      %{
+        entries: [
+          %Position{ x: 0, y: 0, face: "D"},
+          %Position{ x: 4, y: 0, face: "B"}
+        ],
+        metadata: %{after: nil, before: nil}
+      }
 
   """
-  @spec list_positions() :: [Position.t()] | []
-  def list_positions do
-    Repo.all(Position)
+  @spec list_positions(map()) :: Paginator.Page.t()
+  def list_positions(input) do
+    ListPositionsInput.paginate(input)
   end
 
   @doc """

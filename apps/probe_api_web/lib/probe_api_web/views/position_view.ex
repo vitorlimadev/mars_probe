@@ -3,7 +3,13 @@ defmodule ProbeApiWeb.PositionView do
   alias ProbeApiWeb.PositionView
 
   def render("index.json", %{positions: positions}) do
-    %{data: render_many(positions, PositionView, "position.json")}
+    %{
+      cursor: %{
+        after: positions.metadata.after,
+        before: positions.metadata.before,
+        data: render_many(positions.entries, PositionView, "position.json")
+      }
+    }
   end
 
   def render("show.json", %{position: position}) do
@@ -12,9 +18,11 @@ defmodule ProbeApiWeb.PositionView do
 
   def render("position.json", %{position: position}) do
     %{
+      id: position.id,
       x: position.x,
       y: position.y,
-      face: position.face
+      face: position.face,
+      inserted_at: position.inserted_at
     }
   end
 
@@ -27,6 +35,9 @@ defmodule ProbeApiWeb.PositionView do
   end
 
   def render("no_probe.json", _) do
-    %{erro: "A sonda não foi pousada em marte. Pouse-a com uma requisição POST em /api/v1/reset_probe"}
+    %{
+      erro:
+        "A sonda não foi pousada em marte. Pouse-a com uma requisição POST em /api/v1/reset_probe"
+    }
   end
 end

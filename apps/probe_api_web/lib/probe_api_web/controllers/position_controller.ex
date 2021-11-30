@@ -7,9 +7,8 @@ defmodule ProbeApiWeb.PositionController do
 
   action_fallback ProbeApiWeb.FallbackController
 
-  def index(conn, _params) do
-    positions = Positions.list_positions()
-    render(conn, "index.json", positions: positions)
+  def index(conn, cursor) do
+    render(conn, "index.json", positions: Positions.list_positions(cursor))
   end
 
   def reset_probe(conn, _params) do
